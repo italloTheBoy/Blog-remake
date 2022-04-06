@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import IDatabase from '../interfaces/IDatabase';
 
-
 dotenv.config();
 
 

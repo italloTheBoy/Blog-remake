@@ -9,6 +9,7 @@ const {
   host,
 } = config.get<IDatabase>('dbConfig');
 
+
 export default new Sequelize(
   database, 
   username, 
