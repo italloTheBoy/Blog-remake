@@ -2,10 +2,10 @@
   "name": "blogremake",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "./app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node-dev --respawn --transpile-only ./src/app.ts"
+    "start": "ts-node-dev --respawn --transpile-only ./app.ts"
   },
   "keywords": [],
   "author": "Mkspop",

@@ -2,14 +2,19 @@ import { Sequelize } from "sequelize";
 import config from "config";
 import IDatabase from '../interfaces/IDatabase';
 
-const db = config.get<IDatabase>('db');
+const { 
+  database,
+  username,
+  password,
+  host,
+} = config.get<IDatabase>('dbConfig');
 
-export const connectDB = new Sequelize(
-  db.database, 
-  db.username, 
-  db.password, 
+export default new Sequelize(
+  database, 
+  username, 
+  password, 
   {
-    host: db.host,
-    dialect: "mysql",
+    host: host,
+    dialect: 'mysql',
   }
-)
+);

@@ -1,10 +1,8 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import config from 'config';
-
 import { Request, Response } from 'express';
-import { connectDB } from '../config/db';
-
+import db from './config/db';
 
 
 const port = config.get<number>('port');
@@ -25,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 
 
 try {
-  connectDB.sync();
+  db.sync()
 
   app.listen(port, async () => {
     console.log(`Server runnining in http://localhost:${port}`);
@@ -34,4 +32,3 @@ try {
 catch (err) {
   console.log(err);
 }
-

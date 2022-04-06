@@ -3,5 +3,4 @@ export default interface IDatabase {
   username: string;
   password: string;
   host: string;
-  dialect: string;
-}
+};
