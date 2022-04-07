@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import UserValidator from '../helpers/validators/UserValidator';
-import bcrypt from 'bcrypt';
 
 export default class UserController {
   static async register(req: Request, res: Response) 
@@ -37,21 +36,20 @@ export default class UserController {
         ;
       }
 
-      const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash(value.password, salt);
+      delete value.repeatPassword;
 
-      const user = {
-        username: value.username,
-        email: value.email,
-        password: hashedPassword,
-      };
-
-      const newUser = await User.create(user);
+      const newUser = await User.create(value);
+      console.log('hello');
 
       if (!newUser) {
         return res
           .status(422)
-          .json({ msg: 'Não foi possivel registrar o usuario.' })
+          .json({
+            err: {
+              label: 'server',
+              msg: 'Não foi possivel registrar o usuario.',
+            }
+          })
         ;
       }
 
@@ -76,5 +74,10 @@ export default class UserController {
         })
       ;
     }
+  }
+
+  static async get(req: Request, res: Response)
+  {
+
   }
 }
