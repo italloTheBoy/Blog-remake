@@ -19,9 +19,6 @@ const User = db.define('user', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
-    validate: {
-      len: [6, 12],
-    },
   },
 
   type: {
