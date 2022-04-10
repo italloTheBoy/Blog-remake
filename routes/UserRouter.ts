@@ -5,7 +5,7 @@ const userRouter = Router();
 
 userRouter.post('/register', UserController.register);
 
-userRouter.get('/:id', UserController.getOne);
+userRouter.get('/search/:data', UserController.findInBar);
 
 
 export default userRouter;

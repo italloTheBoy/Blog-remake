@@ -48,7 +48,34 @@ export default class UserController {
     }
   }
 
-  static async getOne(req: Request, res: Response) {
+  static async findInBar(req: Request, res: Response) {
 
+    const { data } = req.params;
+
+    try { 
+      const { count, rows } = await User.findAndCountAll({
+        where: {
+          [Op.or]: [
+            { username: data },
+            { email: data },
+          ]
+        }
+      });
+  
+      return res.status(200).json({
+        count,
+        users: rows,
+      });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json({ 
+        err: {
+          label: 'server',
+          msg: 'Ocorreu um erro inesperado.',
+        }
+      });
+    }
   }
 }

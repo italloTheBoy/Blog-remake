@@ -31,6 +31,11 @@ const User = db.define('user', {
     type: DataTypes.ENUM('commum', 'dev', 'admin'),
     defaultValue: 'commum',
   },
+}, 
+{
+  defaultScope: {
+    attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
+  },
 });
 
 export default User;
