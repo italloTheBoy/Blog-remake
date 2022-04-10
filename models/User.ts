@@ -24,7 +24,7 @@ const User = db.define('user', {
       const hash = bcrypt.hashSync(value, 12);
 
       this.setDataValue('password', hash);
-    }
+    },
   },
 
   type: {

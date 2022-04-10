@@ -26,7 +26,7 @@ export default Joi.object({
     .trim()
     .required()
     .min(6)
-    .max(12)
+    .max(20)
     .messages({
       'any.required': 'Insira uma senha.',
       'string.empty': 'Insira uma senha.',

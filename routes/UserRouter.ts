@@ -5,7 +5,7 @@ const userRouter = Router();
 
 userRouter.post('/register', UserController.register);
 
-userRouter.get('/:id', UserController.get);
+userRouter.get('/:id', UserController.getOne);
 
 
 export default userRouter;
