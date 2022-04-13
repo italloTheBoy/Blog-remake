@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  Column, 
+  CreateDateColumn, 
+  UpdateDateColumn,
+  BeforeInsert, 
+} from 'typeorm';
 import bcrypt from 'bcrypt';
+
 
 @Entity()
 export default class User {
@@ -33,4 +41,9 @@ export default class User {
   })
   role!: 'user' | 'dev' | 'adm';
 
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }

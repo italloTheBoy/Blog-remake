@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories';
+import User from '../models/User';
 import bcrypt from 'bcrypt';
 import config from 'config';
 import jwt from 'jsonwebtoken'
@@ -52,47 +53,59 @@ export default class UserController {
     }
   }
 
-  // static async login(req: Request, res: Response) {
-  //   const invalidDataErr = {
-  //     err: {
-  //       label: 'form',
-  //       msg: 'Email ou senha incorretos.',
-  //     }
-  //   }
+  static async login(req: Request, res: Response): Promise<Response> {
+    try {
+      const invalidLogin = {
+        err: {
+          label: 'form',
+          msg: 'Email ou senha incorretos.',
+        }
+      }
 
-  //   try {
-  //     const { error, value } = LoginValidator.validate(req.body);
+      const { error, value } = LoginValidator.validate(req.body);
 
-  //     if (error) {
-  //       res.status(422).json(invalidDataErr);
-  //     }
+      if (error) {
+        return res.status(422).json(invalidLogin);
+      }
 
-  //     const user: IUser = await User.findOne({
-  //       where: { email: value.email },
-  //       attributes: {
-  //         include: ['password']
-  //       },
-  //     });
+      const user = await UserRepository.findOne({ 
+        where: { email: req.body.email },
+        select: ['password']
+      });
 
-  //     if (!user) {
-  //       res.status(404).json(invalidDataErr);
-  //     }
+      if (!user) {
+        return res.status(404).json(invalidLogin);
+      }
 
-  //     const paswordIsCorrect = await bcrypt.compare(value.password, user.password);
+      const paswordIsCorrect = await bcrypt.compare(value.password, user!.password);
 
-  //     // const secret = config.get<string>('secret');
-  //     // const payload = {
-  //     //   id: user.id,
-  //     // }
+      if (!paswordIsCorrect) {
+        return res.status(404).json(invalidLogin);
+      }
 
+      const secret = config.get<string>('secret');
+      const payload = {
+        id: user!.id,
+        email: user!.email,
+      }
 
-  //   }
-  //   catch (err) {
-  //     console.log(err);
+      const token = jwt.sign(payload, secret);
 
-  //     return res.status(500).json(invalidDataErr);
-  //   }
-  // }
+      return res.status(200).json({ token });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json({ 
+        err: {
+          label: 'server',
+          msg: 'Ocorreu um erro inesperado.',
+        }
+      });
+    }
+  }
+
+  
 
   static async findInBar(req: Request, res: Response): Promise<Response> {
     try { 
