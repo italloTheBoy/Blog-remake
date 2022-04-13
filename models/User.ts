@@ -1,41 +1,36 @@
-import { DataTypes } from 'sequelize';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
 import bcrypt from 'bcrypt';
-import db from '../config/db';
 
-const User = db.define('user', {
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
+@Entity()
+export default class User {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  @Column({ nullable: false })
+  username!: string;
+
+  @Column({
+    nullable: false,
     unique: true,
-    validate: {
-      isEmail: true,
-    }
-  },
+  })
+  email!: string;
 
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    set(value: string) {
-      const hash = bcrypt.hashSync(value, 12);
+  @Column({ 
+    nullable: false,
+    select: false,
+  })
+  password!: string;
 
-      this.setDataValue('password', hash);
-    },
-  },
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
 
-  type: {
-    type: DataTypes.ENUM('commum', 'dev', 'admin'),
-    defaultValue: 'commum',
-  },
-}, 
-{
-  defaultScope: {
-    attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
-  },
-});
+  @Column({ 
+    type: 'enum',
+    enum: ['user', 'dev', 'adm'],
+    default: 'user',
+  })
+  role!: 'user' | 'dev' | 'adm';
 
-export default User;
+}

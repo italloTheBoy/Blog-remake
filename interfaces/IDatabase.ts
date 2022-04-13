@@ -1,6 +1,7 @@
 export default interface IDatabase {
-  database: string;
+  host: string;
+  port: number;
   username: string;
   password: string;
-  host: string;
+  database: string;
 };
