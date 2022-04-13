@@ -1,37 +1,28 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories';
-import User from '../models/User';
+import { catchExeption, catchJoiExeption, loginExeption, serverExeption } from '../helpers/Exeptions';
 import bcrypt from 'bcrypt';
-import config from 'config';
-import jwt from 'jsonwebtoken'
+import Token from '../helpers/auth/Token';
 import RegisterValidator from '../helpers/validators/RegisterValidator';
 import LoginValidator from '../helpers/validators/LoginValidator';
 
 export default class UserController {
-
   static async register(req: Request, res: Response): Promise<Response> {
 
     try {
       const { error, value } = RegisterValidator.validate(req.body);
       
       if (error) {
-        return res.status(422).json({ 
-          err: {
-            label:  error.details[0].path[0],
-            msg: error.details[0].message,
-          }
-        });
+        return res.status(422).json(catchJoiExeption(error));
       }
         
       const userExists = await UserRepository.findOneBy({ email: value.email });
 
       if (userExists) {
-        return res.status(422).json({
-          err: {
-            label: 'email',
-            msg: 'Este email ja esta em uso.',
-          }
-        });
+        return res.status(422).json(catchExeption(
+          'email',
+          'Este email ja esta em uso.'
+        ))
       }
 
       const newUser = UserRepository.create(value);
@@ -44,68 +35,45 @@ export default class UserController {
       });
     }
     catch (err) {
-      return res.status(500).json({ 
-        err: {
-          label: 'server',
-          msg: 'Ocorreu um erro inesperado.',
-        }
-      });
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
     }
   }
 
   static async login(req: Request, res: Response): Promise<Response> {
     try {
-      const invalidLogin = {
-        err: {
-          label: 'form',
-          msg: 'Email ou senha incorretos.',
-        }
-      }
-
       const { error, value } = LoginValidator.validate(req.body);
 
       if (error) {
-        return res.status(422).json(invalidLogin);
+        return res.status(422).json(loginExeption);
       }
 
       const user = await UserRepository.findOne({ 
         where: { email: req.body.email },
-        select: ['password']
+        select: ['password'],
       });
 
       if (!user) {
-        return res.status(404).json(invalidLogin);
+        return res.status(404).json(loginExeption);
       }
 
       const paswordIsCorrect = await bcrypt.compare(value.password, user!.password);
 
       if (!paswordIsCorrect) {
-        return res.status(404).json(invalidLogin);
+        return res.status(404).json(loginExeption);
       }
 
-      const secret = config.get<string>('secret');
-      const payload = {
-        id: user!.id,
-        email: user!.email,
-      }
-
-      const token = jwt.sign(payload, secret);
+      const token = Token.generate(user);
 
       return res.status(200).json({ token });
     }
     catch (err) {
       console.log(err);
 
-      return res.status(500).json({ 
-        err: {
-          label: 'server',
-          msg: 'Ocorreu um erro inesperado.',
-        }
-      });
+      return res.status(500).json(serverExeption);
     }
-  }
-
-  
+  }  
 
   static async findInBar(req: Request, res: Response): Promise<Response> {
     try { 
@@ -120,18 +88,11 @@ export default class UserController {
         count,
         users,
       });
-
     }
     catch (err) {
       console.log(err);
 
-      return res.status(500).json({ 
-        err: {
-          label: 'server',
-          msg: 'Ocorreu um erro inesperado.',
-        }
-      });
-
+      return res.status(500).json(serverExeption);
     }
   }
 
@@ -142,28 +103,18 @@ export default class UserController {
       const user = await UserRepository.findOneBy({ id });
 
       if (!user) {
-        return res.status(404).json({
-          err: {
-            label: 'id',
-            msg: 'Usuario não encontrado.',
-          }
-        });
+        return res.status(404).json(catchExeption(
+          'id',
+          'Usuario não encontrado.'
+        ));
       }
   
       return res.status(200).json({ user });
-
     }
     catch (err) {
       console.log(err);
 
-      return res.status(500).json({ 
-        err: {
-          label: 'server',
-          msg: 'Ocorreu um erro inesperado.',
-        }
-      });
-
+      return res.status(500).json(serverExeption);
     }
   }
-
 }
