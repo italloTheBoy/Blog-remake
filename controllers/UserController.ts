@@ -1,6 +1,11 @@
+import { 
+  catchExeption, 
+  catchJoiExeption, 
+  loginExeption, 
+  serverExeption 
+} from '../helpers/Exeptions';
 import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories';
-import { catchExeption, catchJoiExeption, loginExeption, serverExeption } from '../helpers/Exeptions';
 import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
 import RegisterValidator from '../helpers/validators/RegisterValidator';

@@ -11,4 +11,6 @@ userRouter.get('/search/bar/:search', UserController.findInBar);
 
 userRouter.get('/search/id/:id', UserController.findById);
 
+// userRouter.get('/search/token', UserController.findByToken);
+
 export default userRouter;
