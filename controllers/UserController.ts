@@ -56,7 +56,7 @@ export default class UserController {
 
       const user = await UserRepository.findOne({ 
         where: { email: req.body.email },
-        select: ['password'],
+        select: ['id', 'email', 'password'],
       });
 
       if (!user) {
@@ -114,6 +114,28 @@ export default class UserController {
         ));
       }
   
+      return res.status(200).json({ user });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
+  static async findByToken(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id, email } = req.body.user;
+
+      const user = await UserRepository.findOneBy({ id, email });
+    
+      if (!user) {
+        res.status(404).json(catchExeption(
+          'id',
+          'Usuario não encontrado.',
+        ));
+      }
+
       return res.status(200).json({ user });
     }
     catch (err) {

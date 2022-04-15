@@ -5,13 +5,16 @@ import { NextFunction, Request, Response } from 'express';
 import { invalidTokenException, serverExeption, tokenExeption } from '../Exeptions';
 import IUserPayload from '../../interfaces/IUserPayload';
 
-export default class {
+export default class Token {
   private static secret = config.get<string>('secret');
 
   public static generate(user: User): string {
-    const payload = { id: user.id };
+    const payload = { 
+      id: user.id,
+      email: user.email,
+    };
 
-    return jwt.sign(payload, this.secret);
+    return jwt.sign(payload, Token.secret);
   }
 
   private static async getToken(req: Request): Promise<string | null> {
@@ -20,23 +23,23 @@ export default class {
       : null
   }
 
-  public static async checkLogin (
+  public static async checkToken (
     req: Request, res: Response, next: NextFunction
   ) {
     try { 
-      const token = await this.getToken(req);
+      const token = await Token.getToken(req);
 
       if (!token) {
         return res.status(401).json(tokenExeption);
       }
 
-      const decoded = jwt.verify(token, this.secret) as IUserPayload;
+      const decoded = jwt.verify(token, Token.secret) as IUserPayload;
 
-      if (!decoded.id) {
+      if (!decoded.id || !decoded.email) {
         return res.status(401).json(invalidTokenException);
       }
 
-      req.cookies.user = { id: decoded.id };
+      req.body.user = decoded;
 
       next();
     }
