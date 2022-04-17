@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
 import RegisterValidator from '../helpers/validators/RegisterValidator';
 import LoginValidator from '../helpers/validators/LoginValidator';
+import { Console } from 'console';
 
 export default class UserController {
   static async register(req: Request, res: Response): Promise<Response> {
@@ -143,5 +144,80 @@ export default class UserController {
 
       return res.status(500).json(serverExeption);
     }
+  }
+
+  static async promoveToAdm(req: Request, res: Response): Promise<Response> {
+    const loggdUserId = req.body.user.id;
+    const idToPromove = req.params.id;
+
+    if (loggdUserId == idToPromove) {
+      return res.status(422).json(catchExeption(
+        'unauthorized',
+        'Não é possivel promover você mesmo.'
+      ));
+    }
+
+    const promotion = await UserRepository.update(idToPromove, { role: 'adm' });
+
+    if (promotion.affected === 0) {
+      return res.status(404).json(catchExeption(
+        'email',
+        'Usuario não encontrado.',
+      ));
+    }
+
+    return res.status(200).json({
+      msg: 'Cargo alterado com sucesso.',
+    });
+  }
+
+  static async promoveToDev(req: Request, res: Response): Promise<Response> {
+    const loggdUserId = req.body.user.id;
+    const idToPromove = req.params.id;
+
+    if (loggdUserId == idToPromove) {
+      return res.status(422).json(catchExeption(
+        'unauthorized',
+        'Não é possivel promover você mesmo.'
+      ));
+    }
+
+    const promotion = await UserRepository.update(idToPromove, { role: 'dev' });
+
+    if (promotion.affected === 0) {
+      return res.status(404).json(catchExeption(
+        'email',
+        'Usuario não encontrado.',
+      ));
+    }
+
+    return res.status(200).json({
+      msg: 'Cargo alterado com sucesso.',
+    });
+  }
+
+  static async promoveToUser(req: Request, res: Response): Promise<Response> {
+    const loggdUserId = req.body.user.id;
+    const idToPromove = req.params.id;
+
+    if (loggdUserId == idToPromove) {
+      return res.status(422).json(catchExeption(
+        'unauthorized',
+        'Não é possivel promover você mesmo.'
+      ));
+    }
+
+    const promotion = await UserRepository.update(idToPromove, { role: 'user' });
+
+    if (promotion.affected === 0) {
+      return res.status(404).json(catchExeption(
+        'email',
+        'Usuario não encontrado.',
+      ));
+    }
+
+    return res.status(200).json({
+      msg: 'Cargo alterado com sucesso.',
+    });
   }
 }

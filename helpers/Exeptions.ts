@@ -28,6 +28,13 @@ const invalidTokenException = {
   },
 };
 
+const unauthorized = {
+  err: {
+    label: 'unauthorized',
+    msg: 'Acesso não autorizado.',
+  }
+}
+
 function catchJoiExeption(error: Joi.ValidationError) {
   return {
     err: {
@@ -51,6 +58,7 @@ export {
   serverExeption,
   tokenExeption,
   invalidTokenException,
+  unauthorized,
   catchJoiExeption,
   catchExeption,
 }
