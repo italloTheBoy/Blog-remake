@@ -7,7 +7,9 @@ const userRouter = Router();
 
 userRouter.post('/register', UserController.register);
 
-userRouter.get('/login', UserController.login);
+userRouter.post('/login', UserController.login);
+
+userRouter.post('/logout', UserController.logout);
 
 userRouter.get('/search/bar/:search', UserController.findInBar);
 

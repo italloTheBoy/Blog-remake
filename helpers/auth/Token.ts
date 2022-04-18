@@ -1,17 +1,16 @@
 import jwt from 'jsonwebtoken';
 import config from 'config';
-import User from '../../models/User';
 import { NextFunction, Request, Response } from 'express';
 import { invalidTokenException, serverExeption, tokenExeption } from '../Exeptions';
-import IUserPayload from '../../interfaces/IUserPayload';
+import { UserRepository } from '../../models/repositories';
+import User from '../../models/User';
 
 export default class Token {
   private static secret = config.get<string>('secret');
 
-  public static generate(user: User): string {
+  static generate(id: number | string): string {
     const payload = { 
-      id: user.id,
-      email: user.email,
+      id: id,
     };
 
     return jwt.sign(payload, Token.secret);
@@ -23,9 +22,7 @@ export default class Token {
       : null
   }
 
-  public static async checkToken (
-    req: Request, res: Response, next: NextFunction
-  ) {
+  static async checkToken (req: Request, res: Response, next: NextFunction) {
     try { 
       const token = await Token.getToken(req);
 
@@ -33,13 +30,19 @@ export default class Token {
         return res.status(401).json(tokenExeption);
       }
 
-      const decoded = jwt.verify(token, Token.secret) as IUserPayload;
+      const decoded = jwt.verify(token, Token.secret) as { id: number };
 
-      if (!decoded.id || !decoded.email) {
+      if (!decoded.id) {
         return res.status(401).json(invalidTokenException);
       }
 
-      req.body.user = decoded;
+      const user = await UserRepository.findOneBy({ id: decoded.id });
+
+      if (!user) {
+        return res.status(401).json(invalidTokenException);
+      }
+
+      req.body.userId = user.id;
 
       next();
     }
@@ -48,6 +51,5 @@ export default class Token {
 
       return res.status(500).json(serverExeption);
     }
-
   }  
 } 

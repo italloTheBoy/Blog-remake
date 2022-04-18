@@ -9,10 +9,10 @@ export default class Role {
     next :NextFunction
   ): Promise<Response | void> 
   {
-    const { id, email } = req.body.user;
+    const { userId } = req.body;
 
     const user = await UserRepository.findOne({ 
-      where: { id, email },
+      where: { id: userId },
       select: ['role'],
     })
 
@@ -32,10 +32,10 @@ export default class Role {
     next :NextFunction
   ): Promise<Response | void>
   {
-    const { id, email } = req.body.user;
+    const { userId } = req.body;
 
     const user = await UserRepository.findOne({ 
-      where: { id, email },
+      where: { id: userId },
       select: ['role'],
     })
 

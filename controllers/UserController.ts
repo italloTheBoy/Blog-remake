@@ -14,7 +14,6 @@ import { Console } from 'console';
 
 export default class UserController {
   static async register(req: Request, res: Response): Promise<Response> {
-
     try {
       const { error, value } = RegisterValidator.validate(req.body);
       
@@ -70,7 +69,7 @@ export default class UserController {
         return res.status(404).json(loginExeption);
       }
 
-      const token = Token.generate(user);
+      const token = Token.generate(user.id);
 
       return res.status(200).json({ token });
     }
@@ -80,6 +79,10 @@ export default class UserController {
       return res.status(500).json(serverExeption);
     }
   }  
+
+  static async logout(req: Request, res: Response): Promise<void> {
+    
+  }
 
   static async findInBar(req: Request, res: Response): Promise<Response> {
     try { 
@@ -126,9 +129,9 @@ export default class UserController {
 
   static async findByToken(req: Request, res: Response): Promise<Response> {
     try {
-      const { id, email } = req.body.user;
+      const { userId } = req.body;
 
-      const user = await UserRepository.findOneBy({ id, email });
+      const user = await UserRepository.findOneBy({ id: userId });
     
       if (!user) {
         res.status(404).json(catchExeption(
@@ -147,17 +150,17 @@ export default class UserController {
   }
 
   static async promoveToAdm(req: Request, res: Response): Promise<Response> {
-    const loggdUserId = req.body.user.id;
-    const idToPromove = req.params.id;
+    const loggedUserId = req.body.userId;
+    const userIdToPromove = req.params.id;
 
-    if (loggdUserId == idToPromove) {
+    if (loggedUserId == userIdToPromove) {
       return res.status(422).json(catchExeption(
         'unauthorized',
         'Não é possivel promover você mesmo.'
       ));
     }
 
-    const promotion = await UserRepository.update(idToPromove, { role: 'adm' });
+    const promotion = await UserRepository.update(userIdToPromove, { role: 'adm' });
 
     if (promotion.affected === 0) {
       return res.status(404).json(catchExeption(
@@ -172,7 +175,7 @@ export default class UserController {
   }
 
   static async promoveToDev(req: Request, res: Response): Promise<Response> {
-    const loggdUserId = req.body.user.id;
+    const loggdUserId = req.body.userId;
     const idToPromove = req.params.id;
 
     if (loggdUserId == idToPromove) {
@@ -197,7 +200,7 @@ export default class UserController {
   }
 
   static async promoveToUser(req: Request, res: Response): Promise<Response> {
-    const loggdUserId = req.body.user.id;
+    const loggdUserId = req.body.userId;
     const idToPromove = req.params.id;
 
     if (loggdUserId == idToPromove) {
