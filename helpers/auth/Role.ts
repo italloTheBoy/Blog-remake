@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRepository } from "../../models/repositories";
+import { UserRepository } from "../../models/repositories/UserRepository";
 import { invalidTokenException, unauthorized } from '../Exeptions';
 
 export default class Role {

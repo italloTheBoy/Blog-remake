@@ -4,10 +4,12 @@ import {
   Column, 
   CreateDateColumn, 
   UpdateDateColumn,
-  BeforeInsert, 
+  BeforeInsert,
+  OneToMany,
+  JoinColumn, 
 } from 'typeorm';
 import bcrypt from 'bcrypt';
-
+import Post from './Post';
 
 @Entity()
 export default class User {
@@ -40,6 +42,10 @@ export default class User {
     default: 'user',
   })
   role!: 'user' | 'dev' | 'adm';
+
+  @OneToMany(type => Post, user => User)
+  @JoinColumn()
+  posts!: Post[];
 
   @CreateDateColumn()
   createdAt!: Date;

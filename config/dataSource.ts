@@ -2,6 +2,7 @@ import IDatabase from '../interfaces/IDatabase';
 import { DataSource } from 'typeorm';
 import config from "config";
 import User from '../models/User';
+import Post from '../models/Post';
 
 const dbConfig = config.get<IDatabase>('dbConfig');
 
@@ -16,5 +17,6 @@ export default new DataSource({
   logging: ['error', 'warn'],
   entities: [
     User,
+    Post,
   ],
 });

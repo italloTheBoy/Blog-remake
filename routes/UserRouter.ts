@@ -9,8 +9,6 @@ userRouter.post('/register', UserController.register);
 
 userRouter.post('/login', UserController.login);
 
-userRouter.post('/logout', UserController.logout);
-
 userRouter.get('/search/bar/:search', UserController.findInBar);
 
 userRouter.get('/search/id/:id', UserController.findById);

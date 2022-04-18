@@ -5,7 +5,7 @@ import {
   serverExeption 
 } from '../helpers/Exeptions';
 import { Request, Response } from 'express';
-import { UserRepository } from '../models/repositories';
+import { UserRepository } from '../models/repositories/UserRepository';
 import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
 import RegisterValidator from '../helpers/validators/RegisterValidator';
@@ -79,10 +79,6 @@ export default class UserController {
       return res.status(500).json(serverExeption);
     }
   }  
-
-  static async logout(req: Request, res: Response): Promise<void> {
-    
-  }
 
   static async findInBar(req: Request, res: Response): Promise<Response> {
     try { 
