@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
-import Role from '../helpers/auth/Role';
+import Authorization from '../helpers/auth/Authorization';
 import Token from '../helpers/auth/Token';
 
 const userRouter = Router();
@@ -21,12 +21,14 @@ userRouter.patch('/update/username', Token.checkToken, UserController.changeUser
 
 userRouter.patch('/update/password', Token.checkToken, UserController.changePassword);
 
-userRouter.patch('/promove/adm/:id', Token.checkToken, Role.isAdm, UserController.promoveToAdm);
+userRouter.patch('/promove/adm/:id', Token.checkToken, Authorization.isAdm, UserController.promoveToAdm);
 
-userRouter.patch('/promove/dev/:id', Token.checkToken, Role.isAdm, UserController.promoveToDev);
+userRouter.patch('/promove/dev/:id', Token.checkToken, Authorization.isAdm, UserController.promoveToDev);
 
-userRouter.patch('/promove/user/:id', Token.checkToken, Role.isAdm, UserController.promoveToUser);
+userRouter.patch('/promove/user/:id', Token.checkToken, Authorization.isAdm, UserController.promoveToUser);
 
-userRouter.delete('/delete', Token.checkToken, UserController.deleteAccount);
+userRouter.delete('/delete', Token.checkToken, Authorization.passwordIsCorrect, UserController.deleteAccount);
+
+userRouter.delete('/ban/:id', Token.checkToken, Authorization.isAdm, UserController.deleteAccount);
 
 export default userRouter;

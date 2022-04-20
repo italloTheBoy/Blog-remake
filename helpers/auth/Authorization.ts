@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { UserRepository } from "../../models/repositories/UserRepository";
-import { invalidTokenException, unauthorized } from '../Exeptions';
+import { catchExeption, catchJoiExeption, invalidTokenException, unauthorized } from '../Exeptions';
+import bcrypt from 'bcrypt';
+import authPasswordValidator from "../validators/user/authPasswordValidator";
 
-export default class Role {
+export default class Authorization {
   public static async isAdm(
     req: Request, 
     res: Response, 
@@ -47,5 +49,37 @@ export default class Role {
       ? next()
       : res.status(401).json(unauthorized);
     ;
+  }
+
+  public static async passwordIsCorrect(
+    req: Request, 
+    res: Response, 
+    next :NextFunction
+  ): Promise<Response | void> {
+    const { error } = authPasswordValidator.validate(req.body.password);
+
+    if (error) {
+      return res.status(422).json(catchJoiExeption(error));
+    }
+
+    const { userId , password } = req.body;
+
+    const user = await UserRepository.findOne({ 
+      where: { id: userId },
+      select: ['password'],
+    });
+
+    console.log(userId);
+
+    const passwordMath = await bcrypt.compare(password, user!.password);
+
+    if (!passwordMath) {
+      return res.status(422).json(catchExeption(
+        'password',
+        'Senha incorreta.',
+      ));
+    }
+
+    return next();
   }
 }

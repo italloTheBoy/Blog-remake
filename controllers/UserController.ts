@@ -8,11 +8,13 @@ import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories/UserRepository';
 import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
-import RegisterValidator from '../helpers/validators/RegisterValidator';
-import LoginValidator from '../helpers/validators/LoginValidator';
-import EmailValidator from '../helpers/validators/userUpdates/EmailValidator';
-import PasswordValidator from '../helpers/validators/userUpdates/PasswordValidator';
-import UsernameValidator from '../helpers/validators/userUpdates/UsernameValidator';
+import RegisterValidator from '../helpers/validators/user/RegisterValidator';
+import LoginValidator from '../helpers/validators/user/LoginValidator';
+import EmailValidator from '../helpers/validators/user/EmailValidator';
+import PasswordValidator from '../helpers/validators/user/PasswordValidator';
+import UsernameValidator from '../helpers/validators/user/UsernameValidator';
+import DeleteValidator from '../helpers/validators/user/authPasswordValidator';
+import IdValidator from '../helpers/validators/user/IdValidator';
 
 export default class UserController {
   
@@ -228,19 +230,26 @@ export default class UserController {
   }
 
   static async changeUsername(req: Request, res: Response): Promise<Response> {
-    const { value, error } = UsernameValidator.validate(req.body.username);
+    try {
+      const { value, error } = UsernameValidator.validate(req.body.username);
   
-    if (error) {
-      return res.status(422).json(catchJoiExeption(error));
+      if (error) {
+        return res.status(422).json(catchJoiExeption(error));
+      }
+  
+      const { userId } = req.body;
+  
+      await UserRepository.update(userId, { username: value });
+  
+      return res.status(200).json({
+        msg: 'Nome de usuario alterado com sucesso.',
+      });
     }
+    catch (err) {
+      console.log(err);
 
-    const { userId } = req.body;
-
-    await UserRepository.update(userId, { username: value });
-
-    return res.status(200).json({
-      msg: 'Nome de usuario alterado com sucesso.',
-    });
+      return res.status(500).json(serverExeption);
+    }
   } 
 
   static async promoveToAdm(req: Request, res: Response): Promise<Response> {
@@ -318,7 +327,41 @@ export default class UserController {
     });
   }
 
-  static async deleteAccount(req: Request, res: Response): Promise<void> {
+  static async deleteAccount(req: Request, res: Response): Promise<Response> {
+    try {
+      enum UserloggedIs {
+        Adm = Number(req.params.id),
+        User = req.body.userId
+      }
 
+      const id = UserloggedIs.Adm
+        ? UserloggedIs.Adm
+        : UserloggedIs.User 
+      ;
+
+      const { error } = IdValidator.validate(id);
+
+      if (error) {
+        return res.status(422).json(catchJoiExeption(error));
+      }
+      
+      const deleteUser = await UserRepository.delete(id);
+
+      if (deleteUser.affected === 0) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Usuario não encontrado.',
+        ));
+      }
+
+      return res.status(200).json({
+        msg: 'Conta deletada com sucesso.',
+      });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
   }
 }
