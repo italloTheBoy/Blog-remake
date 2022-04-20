@@ -10,9 +10,12 @@ import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
 import RegisterValidator from '../helpers/validators/RegisterValidator';
 import LoginValidator from '../helpers/validators/LoginValidator';
-import { Console } from 'console';
+import EmailValidator from '../helpers/validators/userUpdates/EmailValidator';
+import PasswordValidator from '../helpers/validators/userUpdates/PasswordValidator';
+import UsernameValidator from '../helpers/validators/userUpdates/UsernameValidator';
 
 export default class UserController {
+  
   static async register(req: Request, res: Response): Promise<Response> {
     try {
       const { error, value } = RegisterValidator.validate(req.body);
@@ -145,6 +148,101 @@ export default class UserController {
     }
   }
 
+  static async changeEmail(req: Request, res: Response): Promise<Response>{
+    try {
+      const { userId } = req.body;
+      const { error, value: email } = EmailValidator.validate(req.body.email);
+
+      if (error) {
+        return res.status(422).json(catchJoiExeption(error));
+      }
+
+      const emailExists = await UserRepository.findOneBy({ email });
+
+      if (emailExists) {
+        return res.status(422).json(catchExeption(
+          'email',
+          'Este email ja esta em uso.'
+        ));
+      }
+
+      await UserRepository.update(userId, { email });
+
+      return res.status(200).json({
+        msg: 'Email alterado com sucesso.',
+      });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
+  static async changePassword(req: Request, res: Response): Promise<Response> {
+    try {
+      const { error, value } = PasswordValidator.validate(req.body);
+
+      if (error) {
+        return res.status(422).json(catchJoiExeption(error));
+      }
+
+      const { userId } = req.body;
+      
+      const user = await UserRepository.findOne({ 
+        where: { id: userId },
+        select: ['password'],
+      });
+      
+      if (!user) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Usuario não encontrado.',
+        )); 
+      }
+
+      const { currentPassword, password } = value;
+
+      const passwordMath = await bcrypt.compare(currentPassword, user.password);
+
+      if (!passwordMath) {
+        return res.status(404).json(catchExeption(
+          'currentPassword',
+          'Insira a senha atual corretamente.',
+        ));
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      await UserRepository.update(userId, { password: hashedPassword });
+      
+      return res.status(200).json({
+        msg: 'Senha alterada com sucesso.',
+      });
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
+  static async changeUsername(req: Request, res: Response): Promise<Response> {
+    const { value, error } = UsernameValidator.validate(req.body.username);
+  
+    if (error) {
+      return res.status(422).json(catchJoiExeption(error));
+    }
+
+    const { userId } = req.body;
+
+    await UserRepository.update(userId, { username: value });
+
+    return res.status(200).json({
+      msg: 'Nome de usuario alterado com sucesso.',
+    });
+  } 
+
   static async promoveToAdm(req: Request, res: Response): Promise<Response> {
     const loggedUserId = req.body.userId;
     const userIdToPromove = req.params.id;
@@ -218,5 +316,9 @@ export default class UserController {
     return res.status(200).json({
       msg: 'Cargo alterado com sucesso.',
     });
+  }
+
+  static async deleteAccount(req: Request, res: Response): Promise<void> {
+
   }
 }

@@ -6,7 +6,8 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   OneToMany,
-  JoinColumn, 
+  JoinColumn,
+  BeforeUpdate, 
 } from 'typeorm';
 import bcrypt from 'bcrypt';
 import Post from './Post';
@@ -31,8 +32,7 @@ export default class User {
   })
   password!: string;
 
-  @BeforeInsert()
-  async hashPassword(): Promise<void> {
+  private async hashPassword(): Promise<void> {
     this.password = await bcrypt.hash(this.password, 12);
   }
 
@@ -52,4 +52,9 @@ export default class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @BeforeInsert()
+  async insert() {
+    await this.hashPassword();
+  }
 }

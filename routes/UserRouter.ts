@@ -15,10 +15,18 @@ userRouter.get('/search/id/:id', UserController.findById);
 
 userRouter.get('/search/token', Token.checkToken, UserController.findByToken);
 
+userRouter.patch('/update/email', Token.checkToken, UserController.changeEmail);
+
+userRouter.patch('/update/username', Token.checkToken, UserController.changeUsername);
+
+userRouter.patch('/update/password', Token.checkToken, UserController.changePassword);
+
 userRouter.patch('/promove/adm/:id', Token.checkToken, Role.isAdm, UserController.promoveToAdm);
 
 userRouter.patch('/promove/dev/:id', Token.checkToken, Role.isAdm, UserController.promoveToDev);
 
 userRouter.patch('/promove/user/:id', Token.checkToken, Role.isAdm, UserController.promoveToUser);
+
+userRouter.delete('/delete', Token.checkToken, UserController.deleteAccount);
 
 export default userRouter;
