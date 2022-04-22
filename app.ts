@@ -3,6 +3,7 @@ import config from 'config';
 import dataSource from './config/dataSource';
 import UserRouter from './routes/UserRouter';
 import cors from 'cors';
+import PostRouter from './routes/PostRouter';
 
 const port = config.get<number>('port');
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors({
 }));
 
 app.use('/user', UserRouter);
+app.use('/post', PostRouter);
 
 try {
   dataSource.initialize();

@@ -21,7 +21,7 @@ export default class Token {
       : null
   }
 
-  static async checkToken (req: Request, res: Response, next: NextFunction) {
+  static async check (req: Request, res: Response, next: NextFunction) {
     try { 
       const token = await Token.getToken(req);
 
