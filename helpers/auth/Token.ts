@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import { NextFunction, Request, Response } from 'express';
-import { invalidTokenException, serverExeption, tokenExeption } from '../Exeptions';
+import { invalidTokenException, serverExeption, tokenExeption } from '../validators/Exeptions';
 import { UserRepository } from '../../models/repositories/UserRepository';
 
 export default class Token {

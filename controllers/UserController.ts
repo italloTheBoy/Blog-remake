@@ -3,7 +3,7 @@ import {
   catchJoiExeption, 
   loginExeption, 
   serverExeption 
-} from '../helpers/Exeptions';
+} from '../helpers/validators/Exeptions';
 import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories/UserRepository';
 import bcrypt from 'bcrypt';
@@ -13,20 +13,21 @@ import LoginValidator from '../helpers/validators/user/LoginValidator';
 import EmailValidator from '../helpers/validators/user/EmailValidator';
 import PasswordValidator from '../helpers/validators/user/PasswordValidator';
 import UsernameValidator from '../helpers/validators/user/UsernameValidator';
-import DeleteValidator from '../helpers/validators/user/authPasswordValidator';
 import IdValidator from '../helpers/validators/user/IdValidator';
 
 export default class UserController {
   
   static async register(req: Request, res: Response): Promise<Response> {
     try {
-      const { error, value } = RegisterValidator.validate(req.body);
+      // const { error, value } = RegisterValidator.validate(req.body);
       
-      if (error) {
-        return res.status(422).json(catchJoiExeption(error));
-      }
+      // if (error) {
+      //   return res.status(422).json(catchJoiExeption(error));
+      // }
+
+      const { email } = req.body;
         
-      const userExists = await UserRepository.findOneBy({ email: value.email });
+      const userExists = await UserRepository.findOneBy({ email });
 
       if (userExists) {
         return res.status(422).json(catchExeption(
@@ -35,17 +36,17 @@ export default class UserController {
         ))
       }
 
-      const newUser = UserRepository.create(value);
+      const user = UserRepository.create(req.body);
 
-      await UserRepository.save(newUser);
+      await UserRepository.save(user);
 
       return res.status(201).json({
         msg: 'Usuario registrado com sucesso.',
-        user: newUser,
+        user,
       });
     }
     catch (err) {
-      console.log(err);
+      console.log(err); 
 
       return res.status(500).json(serverExeption);
     }

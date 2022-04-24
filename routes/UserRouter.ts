@@ -1,11 +1,22 @@
 import { Router } from 'express';
+import Athenticator from "../helpers/validators/Athenticator";
 import UserController from '../controllers/UserController';
 import Authorization from '../helpers/auth/Authorization';
 import Token from '../helpers/auth/Token';
+import Joi from 'joi';
+import UserJoiSchema from '../helpers/validators/schemas/UserJoiSchema';
 
 const userRouter = Router();
 
-userRouter.post('/register', UserController.register);
+userRouter.post('/register',
+  Athenticator.validFromBody({
+    username: UserJoiSchema.username,
+    email: UserJoiSchema.email,
+    password: UserJoiSchema.password,
+    repeatPassword: UserJoiSchema.repeatPassword,
+  }),
+  UserController.register,
+);
 
 userRouter.post('/login', UserController.login);
 

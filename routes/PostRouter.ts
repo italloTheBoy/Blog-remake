@@ -1,19 +1,18 @@
 import { Router } from "express";
-import { valid } from "../helpers/validators/valid";
+import Athenticator from "../helpers/validators/Athenticator";
 import PostController from "../controllers/PostController";
 import Token from "../helpers/auth/Token";
-import contentValidator from "../helpers/validators/post/contentValidator";
-import IdValidator from "../helpers/validators/user/IdValidator";
-import Joi from "joi";
+import CommumJoiSchemas from "../helpers/validators/schemas/CommumJoiSchemas";
+import PostJoiSchema from "../helpers/validators/schemas/PostJoiSchema";
 
 const PostRouter = Router();
 
 PostRouter.post('/', 
   Token.check,
-  valid(Joi.object({
-    userId: IdValidator,
-    content: contentValidator,
-  })), 
+  Athenticator.validFromBody({
+    userId: CommumJoiSchemas.id,
+    content: PostJoiSchema.content,
+  }), 
   PostController.post,
 );
 

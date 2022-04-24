@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserRepository } from "../../models/repositories/UserRepository";
-import { catchExeption, catchJoiExeption, invalidTokenException, unauthorized } from '../Exeptions';
+import { catchExeption, catchJoiExeption, invalidTokenException, unauthorized } from '../validators/Exeptions';
 import bcrypt from 'bcrypt';
 import authPasswordValidator from "../validators/user/authPasswordValidator";
 
