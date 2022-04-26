@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export default class PostJoiSchema {
+export default class {
   static content = Joi.string()
     .trim()
     .required()

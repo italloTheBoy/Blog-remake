@@ -35,6 +35,20 @@ const unauthorized = {
   }
 }
 
+const selfhandleException = {
+  err: {
+    label: 'id',
+    msg: 'Não é possivel realizar esta ação em você mesmo.',
+  }
+}
+
+export const unfindedUserExeption = {
+  err: {
+    label: 'id',
+    msg: 'Usuario não encontrado.',
+  }
+}
+
 function catchJoiExeption(error: Joi.ValidationError) {
   return {
     err: {
@@ -59,6 +73,7 @@ export {
   tokenExeption,
   invalidTokenException,
   unauthorized,
+  selfhandleException,
   catchJoiExeption,
   catchExeption,
 }

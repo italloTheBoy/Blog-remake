@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export default class UserJoiSchema {
+export default class {
   static username = Joi.string()
     .required()
     .trim() 

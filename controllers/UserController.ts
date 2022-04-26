@@ -2,18 +2,15 @@ import {
   catchExeption, 
   catchJoiExeption, 
   loginExeption, 
-  serverExeption 
+  selfhandleException, 
+  serverExeption, 
+  unfindedUserExeption
 } from '../helpers/validators/Exeptions';
 import { Request, Response } from 'express';
 import { UserRepository } from '../models/repositories/UserRepository';
 import bcrypt from 'bcrypt';
 import Token from '../helpers/auth/Token';
-import RegisterValidator from '../helpers/validators/user/RegisterValidator';
-import LoginValidator from '../helpers/validators/user/LoginValidator';
-import EmailValidator from '../helpers/validators/user/EmailValidator';
-import PasswordValidator from '../helpers/validators/user/PasswordValidator';
-import UsernameValidator from '../helpers/validators/user/UsernameValidator';
-import IdValidator from '../helpers/validators/user/IdValidator';
+import CommumJoiSchema from '../helpers/validators/schemas/CommumJoiSchema';
 
 export default class UserController {
   
@@ -54,14 +51,10 @@ export default class UserController {
 
   static async login(req: Request, res: Response): Promise<Response> {
     try {
-      const { error, value } = LoginValidator.validate(req.body);
-
-      if (error) {
-        return res.status(422).json(loginExeption);
-      }
+      const { password, email } = req.body;
 
       const user = await UserRepository.findOne({ 
-        where: { email: req.body.email },
+        where: { email },
         select: ['id', 'email', 'password'],
       });
 
@@ -69,7 +62,7 @@ export default class UserController {
         return res.status(404).json(loginExeption);
       }
 
-      const paswordIsCorrect = await bcrypt.compare(value.password, user!.password);
+      const paswordIsCorrect = await bcrypt.compare(password, user!.password);
 
       if (!paswordIsCorrect) {
         return res.status(404).json(loginExeption);
@@ -153,19 +146,14 @@ export default class UserController {
 
   static async changeEmail(req: Request, res: Response): Promise<Response>{
     try {
-      const { userId } = req.body;
-      const { error, value: email } = EmailValidator.validate(req.body.email);
+      const { userId, email } = req.body;
+    
+      const emailInUse = await UserRepository.findOneBy({ email });
 
-      if (error) {
-        return res.status(422).json(catchJoiExeption(error));
-      }
-
-      const emailExists = await UserRepository.findOneBy({ email });
-
-      if (emailExists) {
+      if (emailInUse) {
         return res.status(422).json(catchExeption(
           'email',
-          'Este email ja esta em uso.'
+          'Este email ja esta em uso.',
         ));
       }
 
@@ -184,13 +172,7 @@ export default class UserController {
 
   static async changePassword(req: Request, res: Response): Promise<Response> {
     try {
-      const { error, value } = PasswordValidator.validate(req.body);
-
-      if (error) {
-        return res.status(422).json(catchJoiExeption(error));
-      }
-
-      const { userId } = req.body;
+      const { userId, currentPassword, password } = req.body;
       
       const user = await UserRepository.findOne({ 
         where: { id: userId },
@@ -204,11 +186,9 @@ export default class UserController {
         )); 
       }
 
-      const { currentPassword, password } = value;
+      const passwordIsCorrect  = await bcrypt.compare(currentPassword, user.password);
 
-      const passwordMath = await bcrypt.compare(currentPassword, user.password);
-
-      if (!passwordMath) {
+      if (!passwordIsCorrect ) {
         return res.status(404).json(catchExeption(
           'currentPassword',
           'Insira a senha atual corretamente.',
@@ -232,15 +212,9 @@ export default class UserController {
 
   static async changeUsername(req: Request, res: Response): Promise<Response> {
     try {
-      const { value, error } = UsernameValidator.validate(req.body.username);
+      const { userId, username } = req.body;
   
-      if (error) {
-        return res.status(422).json(catchJoiExeption(error));
-      }
-  
-      const { userId } = req.body;
-  
-      await UserRepository.update(userId, { username: value });
+      await UserRepository.update(userId, { username });
   
       return res.status(200).json({
         msg: 'Nome de usuario alterado com sucesso.',
@@ -254,78 +228,93 @@ export default class UserController {
   } 
 
   static async promoveToAdm(req: Request, res: Response): Promise<Response> {
-    const loggedUserId = req.body.userId;
-    const userIdToPromove = req.params.id;
+    try {
+      const admId = req.body.userId;
+      const userId = Number(req.params.id);
 
-    if (loggedUserId == userIdToPromove) {
-      return res.status(422).json(catchExeption(
-        'unauthorized',
-        'Não é possivel promover você mesmo.'
-      ));
+      if (admId === userId) {
+        return res.status(422).json(selfhandleException);
+      }
+
+      const user = await UserRepository.findOneBy({ id: userId });
+  
+      if (!user) {
+        return res.status(404).json(unfindedUserExeption);
+      }
+
+      user.role = 'adm';
+
+      await UserRepository.save(user);
+
+      return res.status(200).json({
+        msg: 'Cargo alterado com sucesso.',
+      });
     }
+    catch (err) {
+      console.log(err);
 
-    const promotion = await UserRepository.update(userIdToPromove, { role: 'adm' });
-
-    if (promotion.affected === 0) {
-      return res.status(404).json(catchExeption(
-        'email',
-        'Usuario não encontrado.',
-      ));
+      return res.status(500).json(serverExeption);
     }
-
-    return res.status(200).json({
-      msg: 'Cargo alterado com sucesso.',
-    });
   }
 
   static async promoveToDev(req: Request, res: Response): Promise<Response> {
-    const loggdUserId = req.body.userId;
-    const idToPromove = req.params.id;
+    try {
+      const admId = req.body.userId;
+      const userId = Number(req.params.id);
+  
+      if (admId === userId) {
+        return res.status(422).json(selfhandleException);
+      }
 
-    if (loggdUserId == idToPromove) {
-      return res.status(422).json(catchExeption(
-        'unauthorized',
-        'Não é possivel promover você mesmo.'
-      ));
+      const user = await UserRepository.findOneBy({ id: userId });
+  
+      if (!user) {
+        return res.status(404).json(unfindedUserExeption);
+      }
+
+      user.role = 'dev';
+
+      await UserRepository.save(user);
+  
+      return res.status(200).json({
+        msg: 'Cargo alterado com sucesso.',
+      });
     }
+    catch (err) {
+      console.log(err);
 
-    const promotion = await UserRepository.update(idToPromove, { role: 'dev' });
-
-    if (promotion.affected === 0) {
-      return res.status(404).json(catchExeption(
-        'email',
-        'Usuario não encontrado.',
-      ));
+      return res.status(500).json(serverExeption);
     }
-
-    return res.status(200).json({
-      msg: 'Cargo alterado com sucesso.',
-    });
   }
 
   static async promoveToUser(req: Request, res: Response): Promise<Response> {
-    const loggdUserId = req.body.userId;
-    const idToPromove = req.params.id;
+    try {
+      const admId = req.body.userId;
+      const userId = Number(req.params.id);
+  
+      if (admId === userId) {
+        return res.status(422).json(selfhandleException);
+      }
+  
+      const user = await UserRepository.findOneBy({ id: userId });
+  
+      if (!user) {
+        return res.status(404).json(unfindedUserExeption);
+      }
 
-    if (loggdUserId == idToPromove) {
-      return res.status(422).json(catchExeption(
-        'unauthorized',
-        'Não é possivel promover você mesmo.'
-      ));
+      user.role = 'user';
+
+      await UserRepository.save(user);
+  
+      return res.status(200).json({
+        msg: 'Cargo alterado com sucesso.',
+      });
     }
+  catch (err) {
+    console.error(err);
 
-    const promotion = await UserRepository.update(idToPromove, { role: 'user' });
-
-    if (promotion.affected === 0) {
-      return res.status(404).json(catchExeption(
-        'email',
-        'Usuario não encontrado.',
-      ));
-    }
-
-    return res.status(200).json({
-      msg: 'Cargo alterado com sucesso.',
-    });
+    return res.status(500).json(serverExeption);
+  }    
   }
 
   static async deleteAccount(req: Request, res: Response): Promise<Response> {
@@ -340,7 +329,7 @@ export default class UserController {
         : UserloggedIs.User 
       ;
 
-      const { error } = IdValidator.validate(id);
+      const { error } = CommumJoiSchema.id.validate(id);
 
       if (error) {
         return res.status(422).json(catchJoiExeption(error));

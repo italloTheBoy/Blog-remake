@@ -2,7 +2,7 @@ import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
 import { catchJoiExeption, serverExeption } from "./Exeptions";
 
-export default class Athenticator {
+export default class Authenticator {
   private static authenticate(data: object, schema: object) {
     const joiSchema = Joi.object(schema);
 
@@ -14,7 +14,7 @@ export default class Athenticator {
   static validFromBody(schema: object) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
-        const { value, error } = Athenticator.authenticate(req.body, schema);
+        const { value, error } = Authenticator.authenticate(req.body, schema);
   
         if (error) {
           return res.status(422).json(
@@ -38,7 +38,7 @@ export default class Athenticator {
   static validFromPath(schema: object) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
-        const { value, error } = Athenticator.authenticate(req.params, schema);
+        const { value, error } = Authenticator.authenticate(req.params, schema);
   
         if (error) {
           return res.status(422).json(

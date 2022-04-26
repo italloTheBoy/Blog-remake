@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { UserRepository } from "../../models/repositories/UserRepository";
 import { catchExeption, catchJoiExeption, invalidTokenException, unauthorized } from '../validators/Exeptions';
 import bcrypt from 'bcrypt';
-import authPasswordValidator from "../validators/user/authPasswordValidator";
+import UserJoiSchema from "../validators/schemas/UserJoiSchema";
 
 export default class Authorization {
   public static async isAdm(
     req: Request, 
     res: Response, 
-    next :NextFunction
+    next: NextFunction
   ): Promise<Response | void> 
   {
     const { userId } = req.body;
@@ -56,7 +56,7 @@ export default class Authorization {
     res: Response, 
     next :NextFunction
   ): Promise<Response | void> {
-    const { error } = authPasswordValidator.validate(req.body.password);
+    const { error } = UserJoiSchema.password.validate(req.body.password);
 
     if (error) {
       return res.status(422).json(catchJoiExeption(error));
