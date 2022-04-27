@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Like from "./Like";
 import User from "./User";
 
 @Entity()
@@ -12,7 +13,11 @@ export default class Post {
   @Column({ default: 0 })
   like!: number;
 
-  @ManyToOne(type => User, posts => Post, { nullable: false})
+  @OneToMany(type => Like, post => Post)
+  @JoinColumn()
+  likes!: Like[];
+
+  @ManyToOne(type => User, posts => Post, { nullable: false })
   @JoinColumn()
   user!: User;
 

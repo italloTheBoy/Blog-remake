@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import bcrypt from 'bcrypt';
 import Post from './Post';
+import Like from './Like';
 
 @Entity()
 export default class User {
@@ -46,6 +47,10 @@ export default class User {
   @OneToMany(type => Post, user => User)
   @JoinColumn()
   posts!: Post[];
+
+  @OneToMany(type => Post, user => Like)
+  @JoinColumn()
+  likes!: Like[];
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from 'config';
 import { NextFunction, Request, Response } from 'express';
 import { invalidTokenException, serverExeption, tokenExeption } from '../validators/Exeptions';
-import { UserRepository } from '../../models/repositories/UserRepository';
+import { UserRepository } from '../../models/repositories/LikeRepository';
 
 export default class Token {
   private static secret = config.get<string>('secret');

@@ -17,6 +17,9 @@ PostRouter.post('/',
   PostController.post,
 );
 
+// READ
+
+
 // UPDATE
 PostRouter.get('/search/my/new',
   Token.check,
@@ -34,8 +37,6 @@ PostRouter.get('/search/:postId',
   Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
   PostController.getOne,
 );
-
-// READ
 
 // DELETE
 PostRouter.delete('/delete/:postId',
