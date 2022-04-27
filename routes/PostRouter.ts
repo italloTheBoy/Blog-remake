@@ -21,13 +21,13 @@ PostRouter.post('/',
 PostRouter.get('/search/my/new',
   Token.check,
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
-  PostController.getMyPosts('ASC'),
+  PostController.getMyPosts('DESC'),
 );
 
 PostRouter.get('/search/my/old',
   Token.check,
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
-  PostController.getMyPosts('DESC'),
+  PostController.getMyPosts('ASC'),
 );
 
 PostRouter.get('/search/:postId',
@@ -38,6 +38,11 @@ PostRouter.get('/search/:postId',
 // READ
 
 // DELETE
-
+PostRouter.delete('/delete/:postId',
+  Token.check,
+  Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
+  Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
+  PostController.delete,
+)
 
 export default PostRouter;

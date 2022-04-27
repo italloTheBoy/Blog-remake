@@ -33,7 +33,7 @@ export default class PostController {
       if (!post) {
         return res.status(404).json(catchExeption(
           'id',
-          'Postagem não encontrado.',
+          'Postagem não encontrada.',
         ));
       }
   
@@ -46,7 +46,7 @@ export default class PostController {
     }
   }
 
-  static getMyPosts(order: FindOptionsOrderValue = 'ASC') {
+  static getMyPosts(order: FindOptionsOrderValue = 'DESC') {
     return async (req: Request, res: Response, next: NextFunction) => {
       try { 
         const { userId } = req.body;
@@ -109,6 +109,32 @@ export default class PostController {
   static async comment(req: Request, res: Response) {}
 
   // DELETE
-  static async delete(req: Request, res: Response) {}
+  static async delete(req: Request, res: Response) {
+    try {
+      const postId = Number(req.params.postId);
+      const userId = req.body.userId;
+    
+      const post = await PostRepositiry.findOneBy({ 
+        id: postId,
+        user: userId,
+      });
+
+      if (!post) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Postagem não encontrada.',
+        ));
+      }
+
+      await PostRepositiry.delete(postId);
+
+      return res.status(200).json({ msg: 'Postagem deletada.' });
+    }
+    catch (error) {
+      console.log(error);
+
+      return res.status(500).json(serverExeption);
+    }  
+  }
 
 }
