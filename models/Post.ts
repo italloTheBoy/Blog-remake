@@ -9,6 +9,9 @@ export default class Post {
   @Column({ nullable: false })
   content!: string;
 
+  @Column({ default: 0 })
+  like!: number;
+
   @ManyToOne(type => User, posts => Post, { nullable: false})
   @JoinColumn()
   user!: User;

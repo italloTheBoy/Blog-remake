@@ -7,6 +7,7 @@ import PostJoiSchema from "../helpers/validators/schemas/PostJoiSchema";
 
 const PostRouter = Router();
 
+// CREATE
 PostRouter.post('/', 
   Token.check,
   Authenticator.validFromBody({
@@ -15,5 +16,28 @@ PostRouter.post('/',
   }), 
   PostController.post,
 );
+
+// UPDATE
+PostRouter.get('/search/my/new',
+  Token.check,
+  Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
+  PostController.getMyPosts('ASC'),
+);
+
+PostRouter.get('/search/my/old',
+  Token.check,
+  Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
+  PostController.getMyPosts('DESC'),
+);
+
+PostRouter.get('/search/:postId',
+  Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
+  PostController.getOne,
+);
+
+// READ
+
+// DELETE
+
 
 export default PostRouter;

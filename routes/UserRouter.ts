@@ -3,7 +3,6 @@ import Authenticator from "../helpers/validators/Authenticator";
 import UserController from '../controllers/UserController';
 import Authorization from '../helpers/auth/Authorization';
 import Token from '../helpers/auth/Token';
-import Joi from 'joi';
 import UserJoiSchema from '../helpers/validators/schemas/UserJoiSchema';
 import CommumJoiSchema from '../helpers/validators/schemas/CommumJoiSchema';
 
