@@ -39,15 +39,15 @@ export default class PostController {
   
       return res.status(200).json(post);
     }
-    catch (error) {
-      console.log(error);
+    catch (err) {
+      console.log(err);
 
       return res.status(500).json(serverExeption);
     }
   }
 
   static getMyPosts(order: FindOptionsOrderValue = 'DESC') {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response) => {
       try { 
         const { userId } = req.body;
   
@@ -65,8 +65,8 @@ export default class PostController {
   
         return res.status(200).json(posts);
       } 
-      catch (error) {
-        console.log(error);
+      catch (err) {
+        console.log(err);
   
         return res.status(500).json(serverExeption);
       } 
@@ -130,8 +130,8 @@ export default class PostController {
 
       return res.status(200).json({ msg: 'Postagem deletada.' });
     }
-    catch (error) {
-      console.log(error);
+    catch (err) {
+      console.log(err);
 
       return res.status(500).json(serverExeption);
     }  

@@ -5,7 +5,7 @@ export default class {
     .trim()
     .required()
     .min(1)
-    .max(225)
+    .max(255)
     .messages({ 
       'string.base': 'Insira um conteudo valido para a postagem.',
       'string.required': 'Insira o conteudo da postagem.',

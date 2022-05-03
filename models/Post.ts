@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import Like from "./Like";
+import Reaction from "./Reaction";
 import User from "./User";
 
 @Entity()
@@ -7,19 +7,16 @@ export default class Post {
   @PrimaryGeneratedColumn()
   id!: number;
   
-  @Column({ nullable: false })
-  content!: string;
-
-  @Column({ default: 0 })
-  like!: number;
-
-  @OneToMany(type => Like, post => Post)
+  @OneToMany(type => Reaction, post => Post)
   @JoinColumn()
-  likes!: Like[];
+  reactions!: Reaction[];
 
   @ManyToOne(type => User, posts => Post, { nullable: false })
   @JoinColumn()
   user!: User;
+
+  @Column({ nullable: false })
+  content!: string;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import config from "config";
 import User from '../models/User';
 import Post from '../models/Post';
-import Like from '../models/Like';
+import Reaction from '../models/Reaction';
 
 const dbConfig = config.get<IDatabase>('dbConfig');
 
@@ -19,6 +19,6 @@ export default new DataSource({
   entities: [
     User,
     Post,
-    Like,
+    Reaction,
   ],
 });

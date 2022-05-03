@@ -5,10 +5,12 @@ export default class {
     .required()
     .trim() 
     .lowercase()
+    .max(20)
     .messages({
       'any.required': 'Insira seu nome.',
       'string.empty': 'Insira seu nome.',
       'string.base': 'Insira um nome valido.',
+      'string.max': 'O nome é muito longo.',
     })
   ;
 

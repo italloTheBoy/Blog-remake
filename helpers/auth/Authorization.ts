@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRepository } from "../../models/repositories/LikeRepository";
+import { UserRepository } from "../../models/repositories/ReactionRepository";
 import { catchExeption, catchJoiExeption, invalidTokenException, unauthorized } from '../validators/Exeptions';
 import bcrypt from 'bcrypt';
 import UserJoiSchema from "../validators/schemas/UserJoiSchema";

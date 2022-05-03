@@ -7,18 +7,28 @@ import {
   BeforeInsert,
   OneToMany,
   JoinColumn,
-  BeforeUpdate, 
 } from 'typeorm';
 import bcrypt from 'bcrypt';
 import Post from './Post';
-import Like from './Like';
+import Reaction from './Reaction';
 
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
+  @OneToMany(type => Post, user => User)
+  @JoinColumn()
+  posts!: Post[];
+
+  @OneToMany(type => Post, user => Reaction)
+  @JoinColumn()
+  reactions!: Reaction[];
+
+  @Column({ 
+    nullable: false,
+    length: 20,
+  })
   username!: string;
 
   @Column({
@@ -43,14 +53,6 @@ export default class User {
     default: 'user',
   })
   role!: 'user' | 'dev' | 'adm';
-
-  @OneToMany(type => Post, user => User)
-  @JoinColumn()
-  posts!: Post[];
-
-  @OneToMany(type => Post, user => Like)
-  @JoinColumn()
-  likes!: Like[];
 
   @CreateDateColumn()
   createdAt!: Date;
