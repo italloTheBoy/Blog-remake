@@ -1,9 +1,9 @@
 import { Router } from "express";
-import LikeController from "../controllers/ReactionController";
+import ReactionController from "../controllers/ReactionController";
 import Token from "../helpers/auth/Token";
 import Authenticator from "../helpers/validators/Authenticator";
 import CommumJoiSchema from "../helpers/validators/schemas/CommumJoiSchema";
-import LikeJoiSchema from "../helpers/validators/schemas/ReactionJoiSchema";
+import ReactionJoiSchema from "../helpers/validators/schemas/ReactionJoiSchema";
 
 const LikeRouter = Router();
 
@@ -13,30 +13,41 @@ LikeRouter.post('/post',
   Token.check,
   Authenticator.validFromBody({ 
     userId: CommumJoiSchema.id,
-    reactedId: CommumJoiSchema.id,
-    type: LikeJoiSchema.type
+    postId: CommumJoiSchema.id,
+    type: ReactionJoiSchema.type
   }),
-  LikeController.createLike,
+  ReactionController.reactPost,
 );
-
-LikeRouter.post('/dislike/post/:reactedId',);
-
-LikeRouter.post('/like/comment/:reactedId',); 
-
-LikeRouter.post('/dislike/comment/:reactedId',);
 
 // READ
 
-LikeRouter.get('/like/count');
-
-LikeRouter.get('/dislike/count');
+LikeRouter.get('/post/count/:postId',
+  Authenticator.validFromPath({
+    postId: CommumJoiSchema.id,
+  }),
+  ReactionController.countPostReactions,
+);
 
 // UPDATE
 
-LikeRouter.patch('/like');
+LikeRouter.patch('/post',
+  Token.check,
+  Authenticator.validFromBody({
+    userId: CommumJoiSchema.id,
+    postId: CommumJoiSchema.id,
+  }),
+  ReactionController.tradePostReaction,
+);
 
 // DELETE
 
-LikeRouter.delete('/like');
+LikeRouter.delete('/post',
+  Token.check,
+  Authenticator.validFromBody({
+    userId: CommumJoiSchema.id,
+    postId: CommumJoiSchema.id,
+  }),
+  ReactionController.deletePostReaction,
+);
 
 export default LikeRouter;

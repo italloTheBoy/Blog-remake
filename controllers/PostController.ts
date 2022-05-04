@@ -75,21 +75,14 @@ export default class PostController {
   
   static async getFeed(req: Request, res: Response) {}
 
-  static async getLikes(req: Request, res: Response) {}
-  
   static async getFirstLikedPosts(req: Request, res: Response) {}
   
   static async getLastLikedPosts(req: Request, res: Response) {}
-  
-  static async getNumberOfLikes(req: Request, res: Response) {}
-
-  static async getDislikes(req: Request, res: Response) {}
   
   static async getFirstDislikedPosts(req: Request, res: Response) {}
   
   static async getLastDislikedPosts(req: Request, res: Response) {}
   
-  static async getNumberOfDislikes(req: Request, res: Response) {}
 
   static async getMyComments(req: Request, res: Response) {}
   
@@ -102,10 +95,6 @@ export default class PostController {
   static async getNumberOfComments(req: Request, res: Response) {}
 
   // UPDATE
-  static async like(req: Request, res: Response) {}
-
-  static async dislike(req: Request, res: Response) {}
-
   static async comment(req: Request, res: Response) {}
 
   // DELETE
