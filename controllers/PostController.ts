@@ -75,9 +75,11 @@ export default class PostController {
   
   static async getFeed(req: Request, res: Response) {}
 
+
   static async getFirstLikedPosts(req: Request, res: Response) {}
   
   static async getLastLikedPosts(req: Request, res: Response) {}
+  
   
   static async getFirstDislikedPosts(req: Request, res: Response) {}
   

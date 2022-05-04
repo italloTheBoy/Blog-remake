@@ -38,6 +38,33 @@ export default class ReactionController {
   }
 
   // READ
+  static async getMyReaction(req: Request, res: Response) {
+    try {
+      const { userId, postId } = req.body;
+
+      const reaction = await ReactionRepository.findOneBy({
+        user: { id: userId },
+        post: { id: postId },
+      });
+
+      if (!reaction) {
+        return res.status(200).json({
+          IsReacted: false,
+        });
+      }
+
+      return res.status(200).json({
+        IsReacted: true,
+        reactionType: reaction.type,
+      })
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
   static async countPostReactions(req: Request, res: Response) {
     try {
       const postId = Number(req.params.postId);

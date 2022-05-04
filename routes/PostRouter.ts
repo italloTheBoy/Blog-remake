@@ -39,7 +39,7 @@ PostRouter.get('/search/:postId',
 );
 
 // DELETE
-PostRouter.delete('/delete/:postId',
+PostRouter.delete('/:postId',
   Token.check,
   Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),

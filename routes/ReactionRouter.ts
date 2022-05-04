@@ -20,6 +20,14 @@ LikeRouter.post('/post',
 );
 
 // READ
+LikeRouter.get('/post/my/reaction',
+  Token.check,
+  Authenticator.validFromBody({
+    userId: CommumJoiSchema.id,
+    postId: CommumJoiSchema.id,
+  }),
+  ReactionController.getMyReaction,
+)
 
 LikeRouter.get('/post/count/:postId',
   Authenticator.validFromPath({
