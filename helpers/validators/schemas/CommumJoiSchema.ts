@@ -7,4 +7,15 @@ export default class {
     .positive()
     .message('Id de usuario invalido.')
   ;
+
+  static order = Joi.string()
+    .required()
+    .trim()
+    .uppercase()
+    .valid('ASC', 'DESC')
+    .messages({
+      'any.only': 'Filtro invalido.',
+      'string.only': 'Filtro invalido.',
+    })
+  ;
 }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { FindOptionsOrderValue } from "typeorm";
 import { catchExeption, serverExeption } from "../helpers/validators/Exeptions";
 import PostRepositiry from "../models/repositories/PostRepositiry";
+import ReactionRepository from "../models/repositories/ReactionRepository";
 
 export default class PostController {
   // CREATE
@@ -76,14 +77,37 @@ export default class PostController {
   static async getFeed(req: Request, res: Response) {}
 
 
-  static async getFirstLikedPosts(req: Request, res: Response) {}
-  
-  static async getLastLikedPosts(req: Request, res: Response) {}
-  
-  
-  static async getFirstDislikedPosts(req: Request, res: Response) {}
-  
-  static async getLastDislikedPosts(req: Request, res: Response) {}
+  static async getReactedPosts(req: Request, res: Response) {
+    try {
+      const { reaction, order } = req.params ;
+      const { userId } = req.body;
+
+      const reactedPosts = await ReactionRepository.find({
+        where: { 
+          user: { id: userId },
+          type: reaction as 'like' | 'dislike',
+        },
+        relations: ['post'],
+        order: { createdAt: order as FindOptionsOrderValue },
+      });
+
+      if (!reactedPosts) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Nenhuma postagem foi encontrada.',
+        ));
+      }
+
+      const posts = reactedPosts.map(reaction => reaction.post);
+
+      return res.status(200).json(posts);
+    } 
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    } 
+  }
   
 
   static async getMyComments(req: Request, res: Response) {}

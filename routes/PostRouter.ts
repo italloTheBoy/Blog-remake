@@ -3,6 +3,7 @@ import Authenticator from "../helpers/validators/Authenticator";
 import PostController from "../controllers/PostController";
 import Token from "../helpers/auth/Token";
 import CommumJoiSchemas from "../helpers/validators/schemas/CommumJoiSchema";
+import ReactionJoiSchema from "../helpers/validators/schemas/ReactionJoiSchema";
 import PostJoiSchema from "../helpers/validators/schemas/PostJoiSchema";
 
 const PostRouter = Router();
@@ -18,25 +19,36 @@ PostRouter.post('/',
 );
 
 // READ
-
-
-// UPDATE
-PostRouter.get('/search/my/new',
+PostRouter.get('/my/new',
   Token.check,
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
   PostController.getMyPosts('DESC'),
 );
 
-PostRouter.get('/search/my/old',
+PostRouter.get('/my/old',
   Token.check,
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
   PostController.getMyPosts('ASC'),
 );
 
-PostRouter.get('/search/:postId',
+PostRouter.get('/:postId',
   Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
   PostController.getOne,
 );
+
+PostRouter.get('/:reaction/:order',
+  Token.check,
+  Authenticator.validFromPath({ 
+    reaction: ReactionJoiSchema.type,
+    order: CommumJoiSchemas.order,
+  }),
+  Authenticator.validFromBody({ 
+    userId: CommumJoiSchemas.id,
+  }),
+  PostController.getReactedPosts,
+);
+
+// UPDATE
 
 // DELETE
 PostRouter.delete('/:postId',
