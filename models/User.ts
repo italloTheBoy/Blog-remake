@@ -11,6 +11,7 @@ import {
 import bcrypt from 'bcrypt';
 import Post from './Post';
 import Reaction from './Reaction';
+import Comment from './Commment';
 
 @Entity()
 export default class User {
@@ -21,9 +22,13 @@ export default class User {
   @JoinColumn()
   posts!: Post[];
 
-  @OneToMany(type => Post, user => Reaction)
+  @OneToMany(type => Reaction, user => User)
   @JoinColumn()
   reactions!: Reaction[];
+
+  @OneToMany(type => Comment, user => User)
+  @JoinColumn()
+  comments!: Comment[];
 
   @Column({ 
     nullable: false,

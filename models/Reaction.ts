@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Comment from "./Commment";
 import Post from "./Post";
 import User from "./User";
 
@@ -11,13 +12,13 @@ export default class Reaction {
   @JoinColumn()
   user!: User;
 
-  @ManyToOne(type => Post, reaction => Reaction)
+  @ManyToOne(type => Post, reactions => Reaction)
   @JoinColumn()
   post!: Post;
 
-  // @ManyToOne(type => Comment, reaction => Reaction)
-  // @JoinColumn()
-  // comments!: Comment[];
+  @ManyToOne(() => Comment, comment => comment.reactions)
+  @JoinColumn()
+  comment!: Comment;
 
   @Column({ 
     type: 'enum',

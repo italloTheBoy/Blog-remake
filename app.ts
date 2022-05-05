@@ -5,6 +5,7 @@ import dataSource from './config/dataSource';
 import UserRouter from './routes/UserRouter';
 import PostRouter from './routes/PostRouter';
 import ReactionRouter from './routes/ReactionRouter';
+import CommentRouter from './routes/CommentRouter';
 
 const port = config.get<number>('port');
 const app = express();
@@ -19,6 +20,7 @@ app.use(cors({
 app.use('/user', UserRouter);
 app.use('/post', PostRouter);
 app.use('/react', ReactionRouter);
+app.use('/comment', CommentRouter);
 
 try {
   dataSource.initialize();

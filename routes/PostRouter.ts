@@ -48,8 +48,6 @@ PostRouter.get('/:reaction/:order',
   PostController.getReactedPosts,
 );
 
-// UPDATE
-
 // DELETE
 PostRouter.delete('/:postId',
   Token.check,
