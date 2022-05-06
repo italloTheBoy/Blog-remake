@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Post from "./Post";
 import Reaction from "./Reaction";
 import User from "./User";
 
@@ -10,6 +11,10 @@ export default class Comment {
   @ManyToOne(type => User, comments => Comment, { nullable: false })
   @JoinColumn()
   user!: User;
+
+  @ManyToOne(type => Post, comments => Comment, { nullable: false })
+  @JoinColumn()
+  post!: Post;
 
   @OneToMany(() => Reaction, reaction => reaction.comment)
   @JoinColumn()

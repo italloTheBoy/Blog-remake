@@ -12,11 +12,11 @@ export default class Reaction {
   @JoinColumn()
   user!: User;
 
-  @ManyToOne(type => Post, reactions => Reaction)
+  @ManyToOne(type => Post, reactions => Reaction, { onDelete: "CASCADE" })
   @JoinColumn()
   post!: Post;
 
-  @ManyToOne(() => Comment, comment => comment.reactions)
+  @ManyToOne(type => Comment, reactions => Reaction, { onDelete: "CASCADE" })
   @JoinColumn()
   comment!: Comment;
 

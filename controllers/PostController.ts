@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { FindOptionsOrderValue } from "typeorm";
 import { catchExeption, serverExeption } from "../helpers/validators/Exeptions";
 import PostRepositiry from "../models/repositories/PostRepositiry";
@@ -127,11 +127,11 @@ export default class PostController {
   static async delete(req: Request, res: Response) {
     try {
       const postId = Number(req.params.postId);
-      const userId = req.body.userId;
+      const { userId } = req.body;
     
       const post = await PostRepositiry.findOneBy({ 
         id: postId,
-        user: userId,
+        user: { id: userId },
       });
 
       if (!post) {
@@ -141,7 +141,7 @@ export default class PostController {
         ));
       }
 
-      await PostRepositiry.delete(postId);
+      await PostRepositiry.remove(post);
 
       return res.status(200).json({ msg: 'Postagem deletada.' });
     }
