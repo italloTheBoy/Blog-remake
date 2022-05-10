@@ -36,16 +36,21 @@ PostRouter.get('/:postId',
   PostController.getOne,
 );
 
-PostRouter.get('/:reaction/:order',
+PostRouter.get('/reaction/:reaction/:order',
   Token.check,
   Authenticator.validFromPath({ 
-    reaction: ReactionJoiSchema.type,
     order: CommumJoiSchemas.order,
+    reaction: ReactionJoiSchema.type,
   }),
-  Authenticator.validFromBody({ 
-    userId: CommumJoiSchemas.id,
-  }),
+  Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
   PostController.getReactedPosts,
+);
+
+PostRouter.get('/commented/:order',
+  Token.check,
+  Authenticator.validFromPath({ order: CommumJoiSchemas.order }),
+  Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
+  PostController.getCommentedPosts,
 );
 
 // DELETE
