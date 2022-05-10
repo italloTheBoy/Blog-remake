@@ -108,8 +108,7 @@ export default class PostController {
       return res.status(500).json(serverExeption);
     } 
   }
-  
-  
+
   static async getOtherUsersComments(req: Request, res: Response) {}
 
   static async getFirstCommentedPosts(req: Request, res: Response) {}

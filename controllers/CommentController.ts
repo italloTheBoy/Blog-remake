@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Not } from "typeorm";
 import { catchExeption, serverExeption } from "../helpers/validators/Exeptions";
 import CommentRepository from "../models/repositories/CommentRepository";
 
@@ -24,9 +25,35 @@ export default class CommentController {
   }  
 
   // READ
+  static async getOneComment(req: Request, res: Response) {
+    try {
+      const commentId = Number(req.params.commentId);
+
+      const comment = await CommentRepository.findOne({
+        order: { createdAt: 'DESC' },
+        where: { id: commentId },
+      });
+
+      if (!comment) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Comentario não encontrado.',
+        ))
+      }
+
+      return res.status(200).json(comment);
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
   static async getMyComments(req: Request, res: Response) {
     try {
-      const { postId, userId } = req.body;
+      const postId = Number(req.params.postId);
+      const { userId } = req.body;
 
       const comments = await CommentRepository.find({
         order: { createdAt: 'DESC' },
@@ -36,12 +63,47 @@ export default class CommentController {
         },
       });
 
-      if (!comments) {
-        return res.status(404).json(catchExeption(
-          'id',
-          'Nenhum comentário foi encontrado.'
-        ));
-      }
+      return res.status(200).json(comments);
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
+  static async getOtherUsersComments(req: Request, res: Response) {
+    try {
+      const postId = Number(req.params.postId);
+      const { userId } = req.body;
+
+      const comments = await CommentRepository.find({
+        order: { createdAt: 'DESC' },
+        where: {
+          post: { id: postId },
+          user: { id: Not(userId) }, 
+        },
+      });
+
+      return res.status(200).json(comments);
+    }
+    catch (err) {
+      console.log(err);
+    
+      return res.status(500).json(serverExeption);
+    }
+  }
+
+  static async getAllComments(req: Request, res: Response) {
+    try {
+      const postId = Number(req.params.postId);
+
+      const comments = await CommentRepository.find({
+        order: { createdAt: 'DESC' },
+        where: {
+          post: { id: postId }, 
+        },
+      });
 
       return res.status(200).json(comments);
     }

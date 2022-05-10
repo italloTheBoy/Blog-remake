@@ -19,11 +19,28 @@ CommentRouter.post('/',
 );
 
 // READ
+CommentRouter.get('/one/:commentId',
+  Authenticator.validFromPath({ commentId: CommumJoiSchema.id }),
+  CommentController.getOneComment,
+);
+
 CommentRouter.get('/my/:postId',
   Token.check,
   Authenticator.validFromPath({ postId: CommumJoiSchema.id }),
   Authenticator.validFromBody({ userId: CommumJoiSchema.id }),
   CommentController.getMyComments,
+);
+
+CommentRouter.get('/others/:postId',  
+  Token.check,
+  Authenticator.validFromPath({ postId: CommumJoiSchema.id }),
+  Authenticator.validFromBody({ userId: CommumJoiSchema.id }),
+  CommentController.getOtherUsersComments,
+);
+
+CommentRouter.get('/all/:postId',
+  Authenticator.validFromPath({ postId: CommumJoiSchema.id }),
+  CommentController.getAllComments,
 );
 
 // DELETE
