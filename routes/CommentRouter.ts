@@ -18,6 +18,14 @@ CommentRouter.post('/',
   CommentController.create,
 );
 
+// READ
+CommentRouter.get('/my/:postId',
+  Token.check,
+  Authenticator.validFromPath({ postId: CommumJoiSchema.id }),
+  Authenticator.validFromBody({ userId: CommumJoiSchema.id }),
+  CommentController.getMyComments,
+);
+
 // DELETE
 CommentRouter.delete('/:commentId',
   Token.check,

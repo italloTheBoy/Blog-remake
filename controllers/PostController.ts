@@ -109,8 +109,6 @@ export default class PostController {
     } 
   }
   
-
-  static async getMyComments(req: Request, res: Response) {}
   
   static async getOtherUsersComments(req: Request, res: Response) {}
 
@@ -151,5 +149,4 @@ export default class PostController {
       return res.status(500).json(serverExeption);
     }  
   }
-
 }

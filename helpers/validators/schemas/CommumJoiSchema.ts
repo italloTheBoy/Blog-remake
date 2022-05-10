@@ -5,7 +5,13 @@ export default class {
     .required()
     .integer()
     .positive()
-    .message('Id de usuario invalido.')
+    .messages({
+      'any.only': 'Id invalido.',
+      'number.only': 'Id invalido.',
+      'number.base': 'Id invalido.',
+      'number.integer': 'Id invalido.',
+      'number.positive': 'Id invalido.',
+    })
   ;
 
   static order = Joi.string()

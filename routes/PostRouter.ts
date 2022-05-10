@@ -54,6 +54,6 @@ PostRouter.delete('/:postId',
   Authenticator.validFromPath({ postId: CommumJoiSchemas.id }),
   Authenticator.validFromBody({ userId: CommumJoiSchemas.id }),
   PostController.delete,
-)
+);
 
 export default PostRouter;

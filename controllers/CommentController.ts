@@ -23,6 +23,35 @@ export default class CommentController {
     }
   }  
 
+  // READ
+  static async getMyComments(req: Request, res: Response) {
+    try {
+      const { postId, userId } = req.body;
+
+      const comments = await CommentRepository.find({
+        order: { createdAt: 'DESC' },
+        where: {
+          post: { id: postId }, 
+          user: { id: userId }, 
+        },
+      });
+
+      if (!comments) {
+        return res.status(404).json(catchExeption(
+          'id',
+          'Nenhum comentário foi encontrado.'
+        ));
+      }
+
+      return res.status(200).json(comments);
+    }
+    catch (err) {
+      console.log(err);
+
+      return res.status(500).json(serverExeption);
+    }
+  }
+
   // DELETE
   static async delete(req: Request, res: Response) {
     try {
